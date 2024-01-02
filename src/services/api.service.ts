@@ -5,9 +5,9 @@ const API_URL = {
 };
 
 export const getWeatherByLocation = (lon: number, lat: number) => {
-  return HTTPService.get(API_URL.WEATHER, { lon, lat });
+  return HTTPService.get(API_URL.WEATHER, { lon, lat, units: "metric" });
 };
 
 export const getWeatherByCity = (cityName: string) => {
-  return HTTPService.get(API_URL.WEATHER, { q: cityName });
+  return HTTPService.get(API_URL.WEATHER, { q: cityName, units: "metric" });
 };
