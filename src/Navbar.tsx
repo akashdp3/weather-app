@@ -13,18 +13,18 @@ import {
   CommandItem,
   CommandList
 } from "@/components/ui/command";
-import { SUGGESTIONS } from "@/constants/citySuggestions.constant";
+import { CITY_SUGGESTIONS, City } from "@/constants/citySuggestions.constant";
 
 interface NavbarProps {
   city: string;
   setCity: any;
+  setCoordinates: Function;
 }
 
 const Navbar = (props: NavbarProps) => {
-  const { city, setCity } = props;
+  const { city, setCity, setCoordinates } = props;
 
   const [isCommandModalOpen, setCommandModalOpen] = useState(false);
-  // const [cityInput, setCityInput] = useState("");
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -51,15 +51,21 @@ const Navbar = (props: NavbarProps) => {
     },
     debounce: 300
   });
-  console.log({ ready, status, value });
 
   const handleInput = (value: string) => {
     setValue(value);
   };
 
+  const handleSelectDefaultSuggestion = (suggestion: City) => {
+    setCity(suggestion.name);
+    setCoordinates(suggestion.coordinates);
+    setCommandModalOpen(false);
+    setValue("");
+    clearSuggestions();
+  };
+
   const handleSelect = (suggestion: any) => () => {
     // When the user selects a place, we can replace the keyword without request data from API by setting the second parameter to "false"
-    setCity(suggestion);
     setValue(suggestion, false);
 
     setCommandModalOpen(false);
@@ -68,7 +74,9 @@ const Navbar = (props: NavbarProps) => {
 
     getGeocode({ address: suggestion }).then((results) => {
       const { lat, lng } = getLatLng(results[0]);
+      setCity(suggestion);
       console.log({ lat, lng });
+      setCoordinates({ lat, lon: lng });
     });
   };
 
@@ -97,23 +105,28 @@ const Navbar = (props: NavbarProps) => {
           placeholder="Search city..."
           value={value}
           onValueChange={handleInput}
-          // disabled={!ready}
+          disabled={!ready}
         />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup heading="Suggestions">
-            <>
-              {SUGGESTIONS.map((suggestion, i) => (
-                <CommandItem key={i} onSelect={handleSelect(suggestion)}>
-                  {suggestion}
-                </CommandItem>
-              ))}
-            </>
+            {!data.length && (
+              <>
+                {CITY_SUGGESTIONS.map((suggestion, i) => (
+                  <CommandItem
+                    key={i}
+                    onSelect={() => handleSelectDefaultSuggestion(suggestion)}
+                  >
+                    {suggestion.name}
+                  </CommandItem>
+                ))}
+              </>
+            )}
             {status === "OK" &&
               data.map((suggestion) => (
                 <CommandItem
                   key={suggestion.place_id}
-                  onSelect={handleSelect(suggestion)}
+                  onSelect={handleSelect(suggestion.description)}
                 >
                   {suggestion.description}
                 </CommandItem>

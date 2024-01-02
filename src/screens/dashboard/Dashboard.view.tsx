@@ -1,9 +1,19 @@
+import { format } from "date-fns";
+
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent
 } from "@/components/ui/card.js";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
 import Icon from "@/components/ui/icon";
 import Clock from "@/components/ui/clock";
 import { convertToDate } from "@/utilities";
@@ -23,11 +33,11 @@ interface WeatherProps {
   }[];
   timezone: number;
   dt: number;
+  forcastData: any[];
 }
 
 const DashboardView = (props: WeatherProps) => {
-  const { name, main, weather, timezone, dt } = props;
-  console.log({ main, props });
+  const { name, timezone, dt, forcastData } = props;
 
   if (!name) {
     return null;
@@ -35,7 +45,7 @@ const DashboardView = (props: WeatherProps) => {
 
   return (
     <div>
-      <div className="flex gap-4">
+      <div className="flex gap-4 flex-col lg:flex-row">
         <Card className="flex-auto">
           <CardHeader>
             <CardTitle className="text-xl font-semibold">
@@ -45,18 +55,23 @@ const DashboardView = (props: WeatherProps) => {
           <CardContent>
             <div className="pt-12 pb-24 flex flex-col gap-4 items-center">
               <div className="flex gap-1 justify-center items-center">
-                <Icon weatherCode={weather[0].id} className="h-12 w-12" />
-                <p className="text-lg font-semibold">{weather[0].main}</p>
+                <Icon
+                  weatherCode={forcastData[0].weather[0].id}
+                  className="h-12 w-12"
+                />
+                <p className="text-lg font-semibold">
+                  {forcastData[0].weather[0].main}
+                </p>
               </div>
               <p className="flex text-8xl font-bold justify-center">
-                {main.temp}&deg;
+                {forcastData[0].main.temp}&deg;
               </p>
               <div className="flex gap-8 justify-center">
                 <p className="text-lg font-regular">
-                  Min: {main.temp_min}&deg;
+                  Min: {forcastData[0].main.temp_min}&deg;
                 </p>
                 <p className="mr-6 text-lg font-regular">
-                  Max: {main.temp_max}&deg;
+                  Max: {forcastData[0].main.temp_max}&deg;
                 </p>
               </div>
             </div>
@@ -66,14 +81,49 @@ const DashboardView = (props: WeatherProps) => {
             </div>
           </CardContent>
         </Card>
-        <Card className="flex-1 w-32">
+        <Card className="flex-auto">
           <CardHeader>
             <CardTitle className="text-xl font-semibold">
               Weekly Forcast
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p>Forcast</p>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-left">Day</TableHead>
+                  <TableHead className="text-left">Weather</TableHead>
+                  <TableHead className="text-left">Min Temp</TableHead>
+                  <TableHead className="text-left">Max Temp</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {forcastData.map((item) => (
+                  <TableRow>
+                    <TableCell className="text-left">
+                      {format(new Date(item.dt_txt), "iii")}
+                    </TableCell>
+                    <TableCell className="text-left">
+                      <div className="flex gap-1 items-center">
+                        <Icon
+                          weatherCode={item.weather[0].id}
+                          className=" h-8 w-8"
+                        />
+                        <p className="text-sm font-semibold">
+                          {item.weather[0].main}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-left">
+                      {item.main.temp_min}&deg;
+                    </TableCell>
+                    <TableCell className="text-left">
+                      {item.main.temp_max}&deg;
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       </div>

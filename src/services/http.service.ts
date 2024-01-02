@@ -3,7 +3,7 @@ import axios from "axios";
 import AuthTokenService from "./token.service";
 
 class _HTTPService {
-  _apiDomain = "https://api.openweathermap.org/data/2.5/";
+  _apiDomain = "https://api.openweathermap.org";
 
   prepareURL(url: string) {
     return `${this._apiDomain}${url}`;
