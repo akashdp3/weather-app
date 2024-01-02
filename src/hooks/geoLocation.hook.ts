@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 const options = {
-  enableHighAccuracy: false,
+  enableHighAccuracy: true,
   timeout: 5000,
   maximumAge: 0
 };
