@@ -9,7 +9,7 @@ class _HTTPService {
     return `${this._apiDomain}${url}`;
   }
 
-  get(url: string, params: Object) {
+  get(url: string, params) {
     const reqConfig = {
       method: "get",
       url,
